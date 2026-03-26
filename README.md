@@ -1,16 +1,20 @@
-# React + Vite
+# Todo List
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
+This is a React application built to manage a list of todos.
 
-Currently, two official plugins are available:
+---
+## Installation Instructions
+To get this project set up on your local machine, follow these steps:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Clone the repository to your local environment.
+2. Navigate into the project directory in your terminal.
+3. Install the required dependencies by running: `npm install`
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+## How to Run the Development Server
+Once the dependencies are installed, you can start the local development server by running the following command: 
+```bash
+npm run dev
+```
+After the server starts, open the provided local URL (typically `http://localhost:5173`) in your web browser to view the application.
