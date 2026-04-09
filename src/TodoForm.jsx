@@ -1,15 +1,14 @@
-import { useRef } from "react";
+import {useRef, useState} from "react";
 
 export default function TodoForm({onAddTodo}) {
     const inputRef = useRef();
+    const [workingTodoTitle, setWorkingTodoTitle] = useState('');
     const handleAddTodo = (e) => {
         e.preventDefault();
-
-        const todoTitle = e.target.todoTitle.value.trim();
         
-        if (todoTitle && todoTitle !== "") {
-            onAddTodo(todoTitle);
-            e.target.reset();
+        if (workingTodoTitle && workingTodoTitle !== "") {
+            onAddTodo(workingTodoTitle);
+            setWorkingTodoTitle('');
             inputRef.current.focus();
         }
     };
@@ -17,8 +16,15 @@ export default function TodoForm({onAddTodo}) {
     return (
         <form onSubmit={handleAddTodo}>
             <label htmlFor="todoTitle">Todo</label>
-            <input ref={inputRef} type="text" id="todoTitle" name="todoTitle" placeholder={'Todo Text'} required/>
-            <button type="submit">Add Todo</button>
+            <input 
+                ref={inputRef}
+                type="text" id="todoTitle"
+                value={workingTodoTitle}
+                name="todoTitle"
+                placeholder={'Todo Text'}
+                onChange={(e) => setWorkingTodoTitle(e.target.value)}
+                required/>
+            <button type="submit" disabled={!workingTodoTitle.trim()}>Add Todo</button>
         </form>
     );
 }
