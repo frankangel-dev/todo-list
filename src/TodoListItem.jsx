@@ -1,5 +1,12 @@
-export default function TodoListItem({todo}) {
+export default function TodoListItem({todo, onCompleteTodo}) {
     return (
-        <li>{todo.title}</li>
+        <li>
+            <input 
+                type={"checkbox"}
+                checked={todo.isCompleted}
+                onChange={() => onCompleteTodo(todo.id)}
+            />
+            {todo.title}
+        </li>
     );
 }
