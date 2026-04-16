@@ -8,7 +8,7 @@ export default function TodoForm({onAddTodo}) {
     const handleAddTodo = (e) => {
         e.preventDefault();
         
-        if (workingTodoTitle && workingTodoTitle !== "") {
+        if (isValidTodoTitle(workingTodoTitle)) {
             onAddTodo(workingTodoTitle);
             setWorkingTodoTitle('');
             inputRef.current.focus();
