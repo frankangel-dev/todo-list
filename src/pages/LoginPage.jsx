@@ -1,13 +1,24 @@
-import {useState} from "react";
+import {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from "react-router";
 import {useAuth} from "../contexts/AuthContext.jsx";
 
-export default function Logon() {
+export default function LoginPage() {
+    const {login, isAuthenticated} = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/todos';
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [authError, setAuthError] = useState('');
     const [isLoggingOn, setIsLoggingOn] = useState(false);
-    const {login} = useAuth();
-    
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate(from, { replace: true });
+        }
+    }, [isAuthenticated, navigate, from]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setAuthError('');
@@ -31,7 +42,7 @@ export default function Logon() {
             {authError && <p>{authError}</p>}
             <form onSubmit={handleSubmit}>
                 <label htmlFor={'email'}>Email</label>
-                <input 
+                <input
                     type={"email"}
                     id={'email'}
                     value={email}
@@ -41,7 +52,7 @@ export default function Logon() {
                 />
 
                 <label htmlFor={'password'}>Password</label>
-                <input 
+                <input
                     type={"password"}
                     id={'password'}
                     value={password}
@@ -49,7 +60,7 @@ export default function Logon() {
                     required
                     disabled={isLoggingOn}
                 />
-                
+
                 <button type={"submit"} disabled={isLoggingOn}>{isLoggingOn ? 'Logging in...' : 'Log On'}</button>
             </form>
         </>
