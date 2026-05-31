@@ -1,11 +1,13 @@
 import {useEffect, useReducer} from "react";
-import TodoForm from "./TodoForm.jsx";
-import TodoList from "./TodoList/TodoList.jsx";
-import SortBy from "../../shared/SortBy.jsx";
-import useDebounce from "../../utils/useDebounce.js";
-import FilterInput from "../../shared/FilterInput.jsx";
-import {todoReducer, initialTodoState, TODO_ACTIONS} from "../../reducers/todoReducer.js";
-import {useAuth} from "../../contexts/AuthContext.jsx";
+import TodoForm from "../features/Todos/TodoForm.jsx";
+import TodoList from "../features/Todos/TodoList/TodoList.jsx";
+import SortBy from "../shared/SortBy.jsx";
+import useDebounce from "../utils/useDebounce.js";
+import FilterInput from "../shared/FilterInput.jsx";
+import {todoReducer, initialTodoState, TODO_ACTIONS} from "../reducers/todoReducer.js";
+import {useAuth} from "../contexts/AuthContext.jsx";
+import {useSearchParams} from "react-router";
+import StatusFilter from "../shared/StatusFilter.jsx";
 
 export default function TodosPage() {
     const [state, dispatch] = useReducer(todoReducer, initialTodoState);
@@ -20,8 +22,10 @@ export default function TodosPage() {
         dataVersion
     } = state;
     const debouncedFilterTerm = useDebounce(filterTerm, 300);
-    const {token, logout} = useAuth();
-    
+    const {token} = useAuth();
+    const [searchParams] = useSearchParams();
+    const statusFilter = searchParams.get('status') || 'all';
+
     useEffect(() => {
         if (!token) return;
 
@@ -277,6 +281,8 @@ export default function TodosPage() {
                 }
             />
 
+            <StatusFilter/>
+
             <FilterInput
                 filterTerm={filterTerm}
                 onFilterChange={handleFilterChange}
@@ -291,10 +297,8 @@ export default function TodosPage() {
                 onCompleteTodo={completeTodo}
                 onUpdateTodo={updateTodo}
                 dataVersion={dataVersion}
+                statusFilter={statusFilter}
             />
-
-            // For testing
-            <button onClick={() => logout()}>Log Out</button>
         </>
     );
 }
