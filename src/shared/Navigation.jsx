@@ -5,15 +5,15 @@ export default function Navigation() {
     const {isAuthenticated} = useAuth();
 
     const navLinkStyles = ({isActive}) => {
-        return isActive ? {fontWeight: 'bold', textDecoration: 'underline'} : {fontWeight: 'normal', textDecoration: 'none'};
+        return isActive ? 'font-bold text-accent border-b-2 border-accent pb-0.5' : 'font-medium text-text-muted border-b-2 border-transparent pb-0.5 hover:text-accent transition-colors duration-150';
     };
     return (
-        <nav>
-            <ul style={{listStyle: 'none', display: 'flex', gap: '1rem', padding: 0}}>
-                <li><NavLink to={'/about'} style={navLinkStyles}>About</NavLink></li>
-                {isAuthenticated && <li><NavLink to={'/todos'} style={navLinkStyles}>Todos</NavLink></li>}
-                {isAuthenticated && <li><NavLink to={'/profile'} style={navLinkStyles}>Profile</NavLink></li>}
-                {!isAuthenticated && <li><NavLink to={'/login'} style={navLinkStyles}>Login</NavLink></li>}
+        <nav aria-label='Primary navigation'>
+            <ul className={'hidden list-none text-xl items-center gap-10 md:flex'}>
+                <li><NavLink to={'/about'} className={navLinkStyles}>About</NavLink></li>
+                {isAuthenticated && <li><NavLink to={'/todos'} className={navLinkStyles}>Todos</NavLink></li>}
+                {isAuthenticated && <li><NavLink to={'/profile'} className={navLinkStyles}>Profile</NavLink></li>}
+                {!isAuthenticated && <li><NavLink to={'/login'} className={navLinkStyles}>Login</NavLink></li>}
             </ul>
         </nav>
     );
