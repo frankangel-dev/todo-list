@@ -4,7 +4,7 @@ A todo app I built with React 19 as part of my full-stack development coursework
 
 ## Live Demo
 
-[Live Demo]()
+[Live Demo](https://frankangel-todo-app.vercel.app)
 
 ---
 
