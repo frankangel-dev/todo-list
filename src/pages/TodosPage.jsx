@@ -22,7 +22,7 @@ export default function TodosPage() {
         dataVersion
     } = state;
     const debouncedFilterTerm = useDebounce(filterTerm, 300);
-    const {token} = useAuth();
+    const {token, email} = useAuth();
     const [searchParams] = useSearchParams();
     const statusFilter = searchParams.get('status') || 'all';
 
@@ -143,19 +143,20 @@ export default function TodosPage() {
         }
     }
 
-    async function completeTodo(id) {
-        const originalTodo = todoList.find(todo => todo.id === id);
-
+    async function completeTodo(todo) {
         dispatch({
             type: TODO_ACTIONS.COMPLETE_TODO_START,
-            payload: {id}
+            payload: {
+                id: todo.id,
+                isCompleted: !todo.isCompleted
+            }
         });
 
         try {
-            const response = await fetch(`/api/tasks/${id}`, {
+            const response = await fetch(`/api/tasks/${todo.id}`, {
                 method: 'PATCH',
                 body: JSON.stringify({
-                    isCompleted: true,
+                    isCompleted: !todo.isCompleted,
                 }),
                 headers: {
                     'Content-Type': 'application/json',
@@ -165,7 +166,7 @@ export default function TodosPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to complete todo');
+                throw new Error('Failed to toggle todo status');
             }
 
             dispatch({
@@ -176,8 +177,8 @@ export default function TodosPage() {
             dispatch({
                 type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
                 payload: {
-                    id,
-                    todo: originalTodo,
+                    id:todo.id,
+                    todo,
                     message: `Error: ${error.message}`
                 }
             });
@@ -230,6 +231,45 @@ export default function TodosPage() {
         }
     }
 
+    async function deleteTodo(id) {
+        const originalTodo = todoList.find(todo => todo.id === id);
+
+        dispatch({
+            type: TODO_ACTIONS.DELETE_TODO_START,
+            payload: {id}
+        });
+
+        try {
+            const response = await fetch(`/api/tasks/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete todo');
+            }
+
+            dispatch({
+                type: TODO_ACTIONS.DELETE_TODO_SUCCESS,
+            });
+
+        } catch (error) {
+            dispatch({
+                type: TODO_ACTIONS.DELETE_TODO_ERROR,
+                payload: {
+                    id,
+                    todo: originalTodo,
+                    message: `Error: ${error.message}`
+                }
+            });
+
+        }
+    }
+    
     const handleFilterChange = (newTerm) => {
         dispatch({
             type: TODO_ACTIONS.SET_FILTER,
@@ -239,25 +279,63 @@ export default function TodosPage() {
         });
     };
 
+    if (isTodoListLoading) {
+        return (
+            <div className={'mx-auto flex max-w-2xl flex-col gap-6 px-6 py-5'}>
+                <div className={'h-9 w-48 animate-pulse rounded-full bg-border'}></div>
+                <div className={'flex justify-center gap-4'}>
+                    <div className={'h-10 w-32 animate-pulse rounded-lg bg-border'}></div>
+                    <div className={'h-10 w-32 animate-pulse rounded-lg bg-border'}></div>
+                </div>
+                <div className={'flex justify-center gap-2'}>
+                    <div className={'h-10 w-16 animate-pulse rounded-full bg-border'}></div>
+                    <div className={'h-10 w-20 animate-pulse rounded-full bg-border'}></div>
+                    <div className={'h-10 w-24 animate-pulse rounded-full bg-border'}></div>
+                </div>
+                <div className={'h-12 w-full animate-pulse rounded-full bg-border'}></div>
+                <div className={'h-12 w-full animate-pulse rounded-full bg-border'}></div>
+                <div className={'flex flex-col gap-3'}>
+                    <div className={'h-16 w-full animate-pulse rounded-2xl bg-border'}></div>
+                    <div className={'h-16 w-full animate-pulse rounded-2xl bg-border'}></div>
+                    <div className={'h-16 w-full animate-pulse rounded-2xl bg-border'}></div>
+                    <div className={'h-16 w-full animate-pulse rounded-2xl bg-border'}></div>
+                    <div className={'h-16 w-full animate-pulse rounded-2xl bg-border'}></div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <>
+        <div className={'mx-auto flex max-w-2xl flex-col gap-6 px-6 py-5'}>
+            <h2 className={'text-3xl font-extrabold wrap-break-word text-text-primary'}>Hello, {email.split('@')[0]}</h2>
             {error &&
-                <div>
+                <div className={'flex items-center gap-2 rounded-lg bg-error/10 p-4 text-error'}>
                     <p>{error}</p>
-                    <button onClick={() => dispatch({type: TODO_ACTIONS.CLEAR_ERROR})}>Clear Error</button>
+                    <button
+                        className={'cursor-pointer border-none bg-transparent text-xs font-semibold text-error underline'}
+                        onClick={() => dispatch({type: TODO_ACTIONS.CLEAR_ERROR})}
+                    >
+                        Clear Error
+                    </button>
                 </div>
             }
-
+            
             {filterError &&
-                <div>
+                <div className={'flex items-center gap-2 rounded-lg bg-error/10 p-4 text-error'}>
                     <p>{filterError}</p>
-                    <button onClick={() => dispatch({type: TODO_ACTIONS.CLEAR_FILTER_ERROR})}>Clear Filter Error</button>
-                    <button onClick={() => dispatch({type: TODO_ACTIONS.RESET_FILTERS})}>Reset Filters</button>
+                    <button
+                        className={'cursor-pointer border-none bg-transparent text-xs font-semibold text-error underline'}
+                        onClick={() => dispatch({type: TODO_ACTIONS.CLEAR_FILTER_ERROR})}
+                    >
+                        Clear Filter Error
+                    </button>
+                    <button
+                        className={'cursor-pointer border-none bg-transparent text-xs font-semibold text-error underline'}
+                        onClick={() => dispatch({type: TODO_ACTIONS.RESET_FILTERS})}
+                    >
+                        Reset Filters
+                    </button>
                 </div>
-            }
-
-            {isTodoListLoading &&
-                <p>Loading...</p>
             }
 
             <SortBy
@@ -296,9 +374,10 @@ export default function TodosPage() {
                 todoList={todoList}
                 onCompleteTodo={completeTodo}
                 onUpdateTodo={updateTodo}
+                onDeleteTodo={deleteTodo}
                 dataVersion={dataVersion}
                 statusFilter={statusFilter}
             />
-        </>
+        </div>
     );
 }

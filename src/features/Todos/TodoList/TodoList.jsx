@@ -1,7 +1,7 @@
 import TodoListItem from "./TodoListItem.jsx";
 import {useMemo} from "react";
 
-export default function TodoList({todoList, onCompleteTodo, onUpdateTodo, dataVersion, statusFilter = 'all'}) {
+export default function TodoList({todoList, onCompleteTodo, onUpdateTodo, onDeleteTodo, dataVersion, statusFilter = 'all'}) {
     const filteredTodoList = useMemo(() => {
         let filteredTodos;
         switch (statusFilter) {
@@ -34,15 +34,16 @@ export default function TodoList({todoList, onCompleteTodo, onUpdateTodo, dataVe
     
     return (
         filteredTodoList.todos.length === 0 ? (
-            <p>{getEmptyMessage()}</p>
+            <p className={'px-0 py-8 text-center text-sm text-text-muted'} aria-live={'polite'}>{getEmptyMessage()}</p>
         ) : (
-            <ul>
+            <ul className={'flex list-none flex-col gap-3'} aria-label={'Todo list'}>
                 {filteredTodoList.todos.map(todo => (
                     <TodoListItem 
                         key={todo.id}
                         todo={todo}
                         onCompleteTodo={onCompleteTodo}
                         onUpdateTodo={onUpdateTodo}
+                        onDeleteTodo={onDeleteTodo}
                     />
                 ))}
             </ul>
