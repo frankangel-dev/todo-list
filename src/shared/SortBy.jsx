@@ -14,7 +14,7 @@ export default function SortBy({sortBy, sortDirection, onSortByChange, onSortDir
                     onChange={(e) => onSortByChange(e.target.value)}
                     aria-label={'Sort by'}
                 >
-                    <option value={'createdDate'}>Created Date</option>
+                    <option value={'createdAt'}>Created Date</option>
                     <option value={'title'}>Title</option>
                 </select>
             </div>

@@ -26,7 +26,7 @@ export const initialTodoState = {
     error: '',
     filterError:'',
     isTodoListLoading: true,
-    sortBy: 'createdDate',
+    sortBy: 'createdAt',
     sortDirection: 'asc',
     filterTerm: '',
     dataVersion: 0,
@@ -54,6 +54,8 @@ export function todoReducer(state, action) {
                 filterError: action.payload.isFilterError ? action.payload.message : '',
                 error: action.payload.isError ? action.payload.message : ''
             };
+        // optimistic updates
+        // update the UI immediately on START, then confirm or rollback on SUCCESS/ERROR
         case TODO_ACTIONS.ADD_TODO_START:
             return {
                 ...state,
@@ -62,8 +64,8 @@ export function todoReducer(state, action) {
         case TODO_ACTIONS.ADD_TODO_SUCCESS:
             return {
                 ...state,
-                todoList: state.todoList.map(todo => 
-                    todo.id === action.payload.id 
+                todoList: state.todoList.map(todo =>
+                    todo.id === action.payload.id
                         ? {...action.payload.savedTodo}
                         : todo
                 ),
@@ -168,7 +170,7 @@ export function todoReducer(state, action) {
             return {
                 ...state,
                 filterTerm: '',
-                sortBy: 'createdDate',
+                sortBy: 'createdAt',
                 sortDirection: 'asc',
                 filterError: ''
             };

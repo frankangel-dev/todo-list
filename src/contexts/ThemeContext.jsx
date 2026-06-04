@@ -13,6 +13,7 @@ export function useTheme() {
 export function ThemeProvider({children}) {
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
+    // add or remove the 'dark' class on <html> so Tailwind dark mode applies
     useEffect(() => {
         theme === 'dark' ?
             document.documentElement.classList.add('dark')

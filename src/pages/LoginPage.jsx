@@ -7,7 +7,9 @@ export default function LoginPage() {
     const {login, isAuthenticated} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || '/todos';
+    // if RequireAuth redirects the user here, send them back where they were trying to go after login
+    // if they logged out intentionally, location.state.loggedOut is true, so it defaults to /todos
+    const from = location.state?.loggedOut ? '/todos' : (location.state?.from?.pathname || '/todos');
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

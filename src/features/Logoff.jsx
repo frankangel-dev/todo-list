@@ -1,26 +1,7 @@
-import {useState} from "react";
-import {useNavigate} from "react-router";
-import {useAuth} from "../contexts/AuthContext.jsx";
+import {useLogout} from "../hooks/useLogout.js";
 
 export default function Logoff() {
-    const {logout} = useAuth();
-    const navigate = useNavigate();
-    const [isLoggingOff, setIsLoggingOff] = useState(false);
-    const [error, setError] = useState('');
-
-    const handleLogoff = async () => {
-        setError('');
-        setIsLoggingOff(true);
-
-        const result = await logout();
-
-        if (result.success) {
-            navigate('/login');
-        } else {
-            setError(result.error);
-            setIsLoggingOff(false);
-        }
-    };
+    const {isLoggingOff, error, handleLogoff} = useLogout()
     
     return (
         <div className={'flex items-center gap-2'}>

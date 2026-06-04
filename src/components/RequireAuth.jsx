@@ -9,6 +9,8 @@ export default function RequireAuth({children}) {
 
     useEffect(() => {
         if (!isAuthenticated) {
+            // if the user intentionally logs out, don't send them back to the page they were on
+            // if they get redirected by trying to visit a protected page, remember where they were going
             if (isLoggingOut.current) {
                 isLoggingOut.current = false;
                 navigate('/login', { state: { loggedOut: true }, replace: true });

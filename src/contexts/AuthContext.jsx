@@ -10,8 +10,10 @@ export function useAuth() {
 }
 
 export function AuthProvider({children}) {
+    // initialize from localStorage so the user stays logged in after a page refresh
     const [email , setEmail] = useState(() => localStorage.getItem('email') || '');
     const [token, setToken] = useState(() => localStorage.getItem('token') || '');
+    // using a ref instead of state so it doesn't trigger a re-render, just need RequireAuth to read this before redirecting
     const isLoggingOut = useRef(false);
 
     const login = async (userEmail, password) => {

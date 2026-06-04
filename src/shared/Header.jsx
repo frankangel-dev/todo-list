@@ -13,7 +13,7 @@ export default function Header() {
             <Navigation/>
             <div className={'flex gap-4'}>
                 <button
-                    className={'cursor-pointer rounded-full border-2 border-accent px-3 py-1.5 text-sm text-text-primary transition-all duration-150 hover:bg-accent/50'}
+                    className={'flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full border-2 border-accent px-3 py-1.5 text-sm text-text-primary transition-all duration-150 hover:bg-accent/50'}
                     onClick={toggleTheme}
                     aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
                 >

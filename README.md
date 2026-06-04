@@ -80,7 +80,7 @@ A todo app I built with React 19 as part of my full-stack development coursework
    npm run dev
    ```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+4. Open [http://localhost:3001](http://localhost:3001) in your browser.
 
 ---
 
@@ -88,7 +88,7 @@ A todo app I built with React 19 as part of my full-stack development coursework
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Starts the dev server at `http://localhost:5173` |
+| `npm run dev` | Starts the dev server at `http://localhost:3001` |
 | `npm run build` | Builds for production into the `dist` folder |
 | `npm run preview` | Previews the production build locally |
 | `npm run lint` | Runs ESLint |
