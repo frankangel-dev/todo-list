@@ -1,4 +1,4 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useRef, useState} from "react";
 
 const AuthContext = createContext();
 
@@ -10,8 +10,9 @@ export function useAuth() {
 }
 
 export function AuthProvider({children}) {
-    const [email , setEmail] = useState('');
-    const [token, setToken] = useState('');
+    const [email , setEmail] = useState(() => localStorage.getItem('email') || '');
+    const [token, setToken] = useState(() => localStorage.getItem('token') || '');
+    const isLoggingOut = useRef(false);
 
     const login = async (userEmail, password) => {
         try {
@@ -29,7 +30,9 @@ export function AuthProvider({children}) {
 
             if (response.status === 200 && data.name && data.csrfToken) {
                 setEmail(data.name);
+                localStorage.setItem('email', data.name);
                 setToken(data.csrfToken);
+                localStorage.setItem('token', data.csrfToken);
                 return {success: true};
             } else {
                 return {
@@ -46,9 +49,13 @@ export function AuthProvider({children}) {
     };
 
     const logout = async () => {
+        isLoggingOut.current = true;
+        
         if (!token) {
             setEmail('');
+            localStorage.removeItem('email');
             setToken('');
+            localStorage.removeItem('token');
             return {success: true};
         }
         
@@ -68,7 +75,9 @@ export function AuthProvider({children}) {
             };
         } finally {
             setEmail('');
+            localStorage.removeItem('email');
             setToken('');
+            localStorage.removeItem('token');
         }
     };
 
@@ -76,6 +85,7 @@ export function AuthProvider({children}) {
         email,
         token,
         isAuthenticated: !!token,
+        isLoggingOut,
         login,
         logout
     };

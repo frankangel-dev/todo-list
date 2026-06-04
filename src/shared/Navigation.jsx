@@ -11,7 +11,7 @@ export default function Navigation() {
         <nav aria-label='Primary navigation'>
             <ul className={'hidden list-none text-xl items-center gap-10 md:flex'}>
                 <li><NavLink to={'/about'} className={navLinkStyles}>About</NavLink></li>
-                {isAuthenticated && <li><NavLink to={'/todos'} className={navLinkStyles}>Todos</NavLink></li>}
+                {isAuthenticated && <li><NavLink to={'/todos'} className={navLinkStyles}>To-dos</NavLink></li>}
                 {isAuthenticated && <li><NavLink to={'/profile'} className={navLinkStyles}>Profile</NavLink></li>}
                 {!isAuthenticated && <li><NavLink to={'/login'} className={navLinkStyles}>Login</NavLink></li>}
             </ul>
