@@ -26,6 +26,8 @@ export const initialTodoState = {
     error: '',
     filterError:'',
     isTodoListLoading: true,
+    isRefetching: false,
+    isInitialLoad: true,
     sortBy: 'createdAt',
     sortDirection: 'asc',
     filterTerm: '',
@@ -37,7 +39,8 @@ export function todoReducer(state, action) {
         case TODO_ACTIONS.FETCH_START:
             return {
                 ...state,
-                isTodoListLoading: true,
+                isTodoListLoading: state.isInitialLoad,
+                isRefetching: !state.isInitialLoad,
                 filterError: '',
                 error: ''
             };
@@ -45,12 +48,16 @@ export function todoReducer(state, action) {
             return {
                 ...state,
                 todoList: action.payload.todos,
-                isTodoListLoading: false
+                isTodoListLoading: false,
+                isRefetching: false,
+                isInitialLoad: false,
             };
         case TODO_ACTIONS.FETCH_ERROR:
             return {
                 ...state,
                 isTodoListLoading: false,
+                isRefetching: false,
+                isInitialLoad: false,
                 filterError: action.payload.isFilterError ? action.payload.message : '',
                 error: action.payload.isError ? action.payload.message : ''
             };

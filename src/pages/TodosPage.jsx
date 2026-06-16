@@ -16,6 +16,7 @@ export default function TodosPage() {
         error,
         filterError,
         isTodoListLoading,
+        isRefetching,
         sortBy,
         sortDirection,
         filterTerm,
@@ -370,14 +371,16 @@ export default function TodosPage() {
                 onAddTodo={addTodo}
             />
 
-            <TodoList
-                todoList={todoList}
-                onCompleteTodo={completeTodo}
-                onUpdateTodo={updateTodo}
-                onDeleteTodo={deleteTodo}
-                dataVersion={dataVersion}
-                statusFilter={statusFilter}
-            />
+            <div className={`transition-opacity duration-200 ${isRefetching ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}>
+                <TodoList
+                    todoList={todoList}
+                    onCompleteTodo={completeTodo}
+                    onUpdateTodo={updateTodo}
+                    onDeleteTodo={deleteTodo}
+                    dataVersion={dataVersion}
+                    statusFilter={statusFilter}
+                />
+            </div>
         </div>
     );
 }
