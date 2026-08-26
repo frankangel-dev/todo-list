@@ -1,91 +1,117 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 html {
-    height: 100%;
-    overflow: hidden;
+  height: 100%;
+  overflow: hidden;
+  font-size: 106%;
 }
 
 :root {
-    --color-bg: #f8f7f4;
-    --color-surface: #ffffff;
-    --color-border: #e7e5e4;
-    --color-text-primary: #1c1917;
-    --color-text-muted: #78716c;
-    --color-accent: #f59e0b;
-    --color-accent-text: #1c1917;
-    --color-error: #dc2626;
-    --color-nav: #ffffff;
-    --color-glass: rgba(255, 255, 255, .7);
+  --color-bg: #f5ead8;
+  --color-surface: #ebddc5;
+  --color-border: #7e7565;
+  --color-text-primary: #201e1d;
+  --color-text-muted: #645c50;
+  --color-accent: #96491a;
+  --color-accent-hover: #7d3c13;
+  --color-accent-active: #63300f;
+  --color-accent-soft: #f4dcc9;
+  --color-edit: #f7d2ae;
+  --color-accent-text: #f5ead8;
+  --color-accent-2: #487318;
+  --color-accent-2-soft: #f0fae4;
+  --color-error: #8c491a;
+  --color-track: #d8cdb8;
+  --color-nav: #f5ead8;
+  --color-glass: rgba(245, 234, 216, .72);
+  --font-heading: 'Figtree', system-ui, sans-serif;
+  --font-body: 'Figtree', system-ui, sans-serif;
 }
 
 .dark {
-    --color-bg: #0f172a;
-    --color-surface: #1e293b;
-    --color-border: #334155;
-    --color-text-primary: #f8fafc;
-    --color-text-muted: #94a3b8;
-    --color-accent: #f59e0b;
-    --color-accent-text: #1c1917;
-    --color-error: #f87171;
-    --color-nav: #1e293b;
-    --color-glass: rgba(15, 23, 42, .75);
+  --color-bg: #2e2b25;
+  --color-surface: #474238;
+  --color-border: #9a907f;
+  --color-text-primary: #f9f4ed;
+  --color-text-muted: #c0b6a5;
+  --color-accent: #f6a06b;
+  --color-accent-hover: #ffc6a5;
+  --color-accent-active: #ffe1d0;
+  --color-accent-soft: #553c2c;
+  --color-edit: #7a5a41;
+  --color-accent-text: #2e2b25;
+  --color-accent-2: #a8d474;
+  --color-accent-2-soft: #3a4a26;
+  --color-error: #ffc6a5;
+  --color-track: #3a362e;
+  --color-nav: #2e2b25;
+  --color-glass: rgba(46, 43, 37, .75);
 }
 
 @theme inline {
-    --color-bg: var(--color-bg);
-    --color-surface: var(--color-surface);
-    --color-border: var(--color-border);
-    --color-text-primary: var(--color-text-primary);
-    --color-text-muted: var(--color-text-muted);
-    --color-accent: var(--color-accent);
-    --color-accent-text: var(--color-accent-text);
-    --color-error: var(--color-error);
-    --color-nav: var(--color-nav);
-    --color-glass: var(--color-glass);
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-muted: var(--color-text-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-active: var(--color-accent-active);
+  --color-accent-soft: var(--color-accent-soft);
+  --color-edit: var(--color-edit);
+  --color-accent-text: var(--color-accent-text);
+  --color-accent-2: var(--color-accent-2);
+  --color-accent-2-soft: var(--color-accent-2-soft);
+  --color-error: var(--color-error);
+  --color-track: var(--color-track);
+  --color-nav: var(--color-nav);
+  --color-glass: var(--color-glass);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --radius-card: 28px;
+  /* rem-based so they scale with the user's browser font size */
+  --text-tiny: .7rem;
+  --text-meta: .77rem;
+  --text-body-sm: .89rem;
+  --text-item: 1rem;
 }
 
 body {
-    background-color: #fafafa;
-    background-image: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
-    background-attachment: fixed;
-    color: var(--color-text-primary);
-    min-height: 100dvh;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    height: 100%;
-    overflow-y: auto;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  height: 100%;
+  overflow-y: auto;
 }
 
-.dark body {
-    background-color: #0f172a;
-    background-image: radial-gradient(ellipse at 50% 0%, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 1) 100%);
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.08;
 }
 
 :focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-    border-radius: 4px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 30px;
 }
 
 select:focus-visible,
 input:focus-visible {
-    outline: none;
-}
-
-body:not(.using-mouse) select:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-    border-radius: 4px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-    }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
 }
 
 ::selection {
-    background-color: var(--color-accent);
-    color: var(--color-accent-text);
+  background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
 }

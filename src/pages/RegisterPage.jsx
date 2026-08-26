@@ -1,110 +1,157 @@
-import {useEffect, useState} from 'react';
-import {Link, useLocation, useNavigate} from "react-router";
+import {useEffect, useRef, useState} from 'react';
+import {Link, useNavigate} from "react-router";
 import {useAuth} from "../contexts/AuthContext.jsx";
 import {sanitizeInput} from "../utils/sanitize.js";
 import {useGoogleLogin} from "@react-oauth/google";
+import ReCAPTCHA from "react-google-recaptcha";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const {login, googleLogin, isAuthenticated} = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  // if RequireAuth redirects the user here, send them back where they were trying to go after login
-  // if they logged out intentionally, location.state.loggedOut is true, so it defaults to /todos
-  const from = location.state?.loggedOut ? '/todos' : (location.state?.from?.pathname || '/todos');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [authError, setAuthError] = useState('');
-  const [isLoggingOn, setIsLoggingOn] = useState(false);
+  const [registerError, setRegisterError] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+  // the widget hands back a token when the box is ticked, and null when it expires
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const recaptchaRef = useRef(null);
 
+  // the backend route finds or creates the account, so signing up and signing in with
+  // Google are the same request.
   const googleSignIn = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (response) => {
-      setAuthError('');
-      setIsLoggingOn(true);
+      setRegisterError('');
+      setIsRegistering(true);
 
       try {
         const result = await googleLogin(response.code);
 
         if (!result.success) {
-          setAuthError(result.error);
+          setRegisterError(result.error);
         }
       } catch (e) {
-        setAuthError(`Error: ${e.name} | ${e.message}`);
+        setRegisterError(`Error: ${e.name} | ${e.message}`);
       } finally {
-        setIsLoggingOn(false);
+        setIsRegistering(false);
       }
     },
     onError: () => {
-      setAuthError("Google sign-in was cancelled.");
+      setRegisterError('Google sign up was cancelled.');
     },
   });
 
+  const passwordCheck = [
+    {label: 'At least 8 characters', check: password.length >= 8},
+    {label: 'One lowercase letter', check: /[a-z]/.test(password)},
+    {label: 'One capital letter', check: /[A-Z]/.test(password)},
+    {label: 'One number', check: /\d/.test(password)},
+    {label: 'One symbol', check: /[^a-zA-Z0-9]/.test(password)},
+  ]
+  const validPassword = passwordCheck.every(password => password.check)
+
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(from, {replace: true});
+      navigate('/todos', {replace: true});
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAuthError('');
-    setIsLoggingOn(true);
+    setRegisterError('');
+
+    if (!validPassword) {
+      setRegisterError('Password does not meet all requirements.')
+      return;
+    }
+
+    if (!recaptchaToken) {
+      setRegisterError('Please check the box to prove you are not a robot.');
+      return;
+    }
+
+    setIsRegistering(true);
+
+    const cleanEmail = sanitizeInput(email);
+    const cleanPassword = sanitizeInput(password);
 
     try {
-      const result = await login(sanitizeInput(email), sanitizeInput(password));
+      const response = await fetch('/api/users/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name: cleanEmail.split('@')[0],
+          email: cleanEmail,
+          password: cleanPassword,
+          recaptchaToken
+        }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setRegisterError(`Registration failed: ${data?.message}`);
+        // a token only works once, clears the box and makes them tick it again
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
+        return;
+      }
+
+      // log the new user straight in, then the effect above redirects to /todos
+      const result = await login(cleanEmail, cleanPassword);
 
       if (!result.success) {
-        setAuthError(result.error);
+        setRegisterError(result.error);
       }
     } catch (error) {
-      setAuthError(`Error: ${error.name} | ${error.message}`);
+      setRegisterError(`Error: ${error.name} | ${error.message}`);
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
     } finally {
-      setIsLoggingOn(false);
+      setIsRegistering(false);
     }
   }
 
   return (
     <div className={'mx-auto grid w-full max-w-5xl items-center gap-10 px-5 py-10 sm:px-8 md:grid-cols-2 md:py-20'}>
       <div className={'flex flex-col gap-3.5'}>
-        <span className={'flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-text'}>
-            <svg className={'h-6 w-6'} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75"
-                 strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><rect x="3"
-                                                                                                          y="4"
-                                                                                                          width="6"
-                                                                                                          height="6"
-                                                                                                          rx="1"/>
-            </svg>
-        </span>
-        <h2 className={'font-heading text-3xl text-text-primary sm:text-5xl'}>Welcome back</h2>
-        <p className={'max-w-sm text-base text-text-muted'}>Log in and your list will be right where you left
-          it.</p>
+                <span
+                  className={'flex h-14 w-14 items-center justify-center rounded-full bg-accent-2 text-accent-text'}>
+                    <svg className={'h-6 w-6'} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75"
+                         strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M5 12h14"/><path d="M12 5v14"/>
+                    </svg>
+                </span>
+        <h2 className={'font-heading text-3xl text-text-primary sm:text-5xl'}>Create your account</h2>
+        <p className={'max-w-sm text-base text-text-muted'}>Sign up with an email or just use your Google account.
+          You will start off with a few tasks to try things out.</p>
       </div>
 
       <div className={'flex flex-col gap-4 rounded-card bg-surface p-6 shadow-md sm:p-8'}>
-        {authError &&
+        {registerError &&
           <p className={'rounded-full bg-accent-soft px-4 py-3 text-sm font-medium text-error'}
-             role={'alert'}>{authError}</p>}
+             role={'alert'}>{registerError}</p>}
         <form onSubmit={handleSubmit} className={'flex w-full flex-col gap-4'}>
           <div className={'flex flex-col gap-1.5'}>
-            <label htmlFor={'email'} className={'text-meta text-text-muted'}>Email</label>
+            <label htmlFor={'registerEmail'} className={'text-xs text-text-muted'}>Email</label>
             <div className={'relative flex items-center'}>
-              <svg className={'pointer-events-none absolute left-4 h-5 w-5 text-text-muted'}
+              <svg className={'pointer-events-none absolute left-4 h-4 w-4 text-text-muted'}
                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round"
                    strokeLinejoin="round" aria-hidden="true">
                 <rect x="2" y="4" width="20" height="16" rx="2"/>
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
               </svg>
               <input
-                className={'min-h-12 w-full rounded-full border border-border bg-bg pr-4 pl-11 text-base text-text-primary outline-none placeholder:text-text-muted'}
+                className={'min-h-12 w-full rounded-full border border-border bg-bg pl-11 pr-4 text-base text-text-primary outline-none placeholder:text-text-muted'}
                 type={"email"}
-                id={'email'}
+                id={'registerEmail'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isLoggingOn}
+                disabled={isRegistering}
                 placeholder={'you@example.com'}
                 maxLength={200}
                 autoComplete={'email'}
@@ -113,26 +160,28 @@ export default function LoginPage() {
           </div>
 
           <div className={'flex flex-col gap-1.5'}>
-            <label htmlFor={'password'} className={'text-meta text-text-muted'}>Password</label>
+            <label htmlFor={'registerPassword'} className={'text-xs text-text-muted'}>Password</label>
             <div className={'relative flex items-center'}>
-              <svg className={'pointer-events-none absolute left-4 h-5 w-5 text-text-muted'}
+              <svg className={'pointer-events-none absolute left-4 h-4 w-4 text-text-muted'}
                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round"
                    strokeLinejoin="round" aria-hidden="true">
                 <rect width="18" height="11" x="3" y="11" rx="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
               <input
-                className={'min-h-12 w-full rounded-full border border-border bg-bg pr-14 pl-11 text-base text-text-primary outline-none placeholder:text-text-muted'}
+                className={'min-h-12 w-full rounded-full border border-border bg-bg pl-11 pr-14 text-base text-text-primary outline-none placeholder:text-text-muted'}
                 type={showPassword ? 'text' : 'password'}
-                id={'password'}
+                id={'registerPassword'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={isLoggingOn}
+                minLength={8}
+                disabled={isRegistering}
                 placeholder={'Password'}
                 maxLength={200}
-                autoComplete={'current-password'}
+                autoComplete={'new-password'}
               />
+
               <button
                 className={'absolute right-1.5 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-text-muted'}
                 type={'button'}
@@ -141,14 +190,14 @@ export default function LoginPage() {
                 aria-pressed={showPassword}
               >
                 {showPassword ?
-                  <svg className={'h-5 w-5'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  <svg className={'h-4 w-4'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
                        strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path
                       d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/>
                     <circle cx="12" cy="12" r="3"/>
                   </svg>
                   :
-                  <svg className={'h-5 w-5'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  <svg className={'h-4 w-4'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
                        strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
                     <path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68"/>
@@ -158,14 +207,36 @@ export default function LoginPage() {
                 }
               </button>
             </div>
+
+            {password.length > 0 && (
+              <ul className={'flex flex-col gap-1 text-sm'} aria-live={'polite'}>
+                {passwordCheck.map(password => (
+                  <li
+                    key={password.label}
+                    className={password.check ? 'text-success' : 'text-text-muted'}
+                  >
+                    <span aria-hidden={'true'}>{password.check ? '✓' : '○'}</span> {password.label}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className={'flex justify-center'}>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              onChange={setRecaptchaToken}
+              onExpired={() => setRecaptchaToken(null)}
+            />
           </div>
 
           <button
             className={'min-h-13 w-full cursor-pointer rounded-full border-none bg-accent p-3 text-base font-semibold text-accent-text transition-colors duration-150 hover:bg-accent-hover active:bg-accent-active disabled:opacity-45'}
             type={"submit"}
-            disabled={isLoggingOn}
+            disabled={isRegistering || !recaptchaToken}
           >
-            {isLoggingOn ? 'Logging in...' : 'Log in'}
+            {isRegistering ? 'Creating account...' : 'Create account'}
           </button>
 
           {/* a divider between the buttons */}
@@ -179,7 +250,7 @@ export default function LoginPage() {
             className={'flex min-h-13 w-full cursor-pointer items-center justify-center gap-3 rounded-full border border-border bg-bg p-3 text-base font-semibold text-text-primary transition-colors duration-150 hover:bg-black/5 disabled:opacity-45 dark:hover:bg-white/10'}
             type={"button"}
             onClick={() => googleSignIn()}
-            disabled={isLoggingOn}
+            disabled={isRegistering}
           >
             <svg className={'h-5 w-5'} viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#4285F4"
@@ -191,11 +262,11 @@ export default function LoginPage() {
               <path fill="#EA4335"
                     d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.62l4 3.09C6.22 6.86 8.87 4.75 12 4.75Z"/>
             </svg>
-            Continue with Google
+            Sign up with Google
           </button>
         </form>
         <p className={'text-sm text-text-muted'}>
-          New here? <Link to={'/register'} className={'font-semibold text-accent'}>Create an account</Link>
+          Already have an account? <Link to={'/login'} className={'font-semibold text-accent'}>Log in</Link>
         </p>
       </div>
     </div>
