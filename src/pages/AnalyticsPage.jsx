@@ -181,7 +181,7 @@ export default function AnalyticsPage() {
                 <div className={'flex items-start justify-between gap-4'}>
                   <div className={'flex flex-col gap-0.5'}>
                     <span className={'font-heading text-xl text-text-primary'}>{user.name}</span>
-                    <span className={'text-meta text-text-muted'}>{user.email}</span>
+                    <span className={'text-meta text-text-primary/80'}>{user.email}</span>
                   </div>
                   <span className={'shrink-0 rounded-full bg-bg px-3 py-1 text-meta font-semibold text-text-muted'}>
                     {user._count?.Task ?? 0} tasks
@@ -193,7 +193,7 @@ export default function AnalyticsPage() {
                   <div className={'flex flex-wrap gap-2'}>
                     {user.Task.map(task => (
                       <span key={task.id}
-                            className={'rounded-full border border-border px-3 py-1 text-meta text-text-muted'}>
+                            className={'rounded-full border border-border px-3 py-1 text-meta font-semibold text-text-primary/80'}>
                         Task #{task.id}
                       </span>
                     ))}
@@ -220,7 +220,7 @@ export default function AnalyticsPage() {
               </div>
 
               {openUserId === user.id && breakdown &&
-                <div className={'flex flex-col gap-5 rounded-card bg-accent-soft p-5'}>
+                <div className={'flex flex-col gap-5 rounded-card bg-edit p-5'}>
                   <div className={'flex gap-3'}>
                     {[
                       {label: 'Done', value: doneCount, accent: true},
@@ -228,7 +228,7 @@ export default function AnalyticsPage() {
                       {label: 'Total', value: totalCount, accent: false}
                     ].map(stat => (
                       <div key={stat.label}
-                           className={`flex flex-1 flex-col gap-1 rounded-card p-4 ${stat.accent ? 'bg-accent-2-soft' : 'bg-surface'}`}>
+                           className={`flex flex-1 flex-col gap-1 rounded-card border p-4 ${stat.accent ? 'border-accent-2/30 bg-accent-2-soft' : 'border-border/50 bg-white dark:bg-accent-soft'}`}>
                         <span className={'text-xs font-bold uppercase tracking-wider text-text-muted'}>{stat.label}</span>
                         <span className={`font-heading text-3xl ${stat.accent ? 'text-accent-2' : 'text-text-primary'}`}>
                           {stat.value}
@@ -239,10 +239,10 @@ export default function AnalyticsPage() {
 
                   {breakdown.recentTasks?.length > 0 &&
                     <div className={'flex flex-col gap-2.5'}>
-                      <span className={'text-xs font-bold uppercase tracking-wider text-text-muted'}>Most recent</span>
+                      <span className={'text-xs font-bold uppercase tracking-wider text-text-primary/85'}>Most recent</span>
                       {breakdown.recentTasks.map(task => (
                         <div key={task.id}
-                             className={'flex items-center gap-3 rounded-card bg-surface px-5 py-3.5'}>
+                             className={'flex items-center gap-3 rounded-card border border-border/50 bg-white px-5 py-3.5 dark:bg-accent-soft'}>
                           <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${task.isCompleted ? 'bg-accent-2' : 'bg-accent'}`}></span>
                           <span className={`flex-1 text-body ${task.isCompleted ? 'text-text-muted line-through' : 'text-text-primary'}`}>
                             {task.title}
