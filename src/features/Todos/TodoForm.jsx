@@ -37,22 +37,30 @@ export default function TodoForm({onAddTodo}) {
       />
       {folders.length > 0 &&
         <>
-          <label htmlFor={'todoFolder'} className={'sr-only'}>Folder</label>
-          <select
-            className={'min-h-12 shrink-0 cursor-pointer rounded-full border border-border bg-bg pr-8 pl-4 text-body-sm text-text-primary'}
-            id={'todoFolder'}
-            value={workingFolderId}
-            onChange={(e) => setWorkingFolderId(e.target.value)}
-          >
-            <option value={''}>No folder</option>
-            {folders.map(folder => (
-              <option key={folder.id} value={folder.id}>{folder.name}</option>
-            ))}
-          </select>
+          {/* appearance-none so iOS does not draw its own */}
+          <div className={'relative flex shrink-0 items-center'}>
+            <label htmlFor={'todoFolder'} className={'sr-only'}>Folder</label>
+            <select
+              className={'min-h-13 w-full cursor-pointer appearance-none truncate rounded-full border border-border bg-bg py-3 pr-10 pl-4 text-body-sm text-text-primary'}
+              id={'todoFolder'}
+              value={workingFolderId}
+              onChange={(e) => setWorkingFolderId(e.target.value)}
+            >
+              <option value={''}>No folder</option>
+              {folders.map(folder => (
+                <option key={folder.id} value={folder.id}>{folder.name}</option>
+              ))}
+            </select>
+            <svg className={'pointer-events-none absolute right-4 h-4 w-4 text-text-muted'} viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round"
+                 aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
         </>
       }
       <button
-        className={'flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full border-none bg-accent px-6 font-semibold text-accent-text transition-colors duration-150 hover:bg-accent-hover active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-45'}
+        className={'flex min-h-13 cursor-pointer items-center justify-center gap-2 rounded-full border-none bg-accent px-6 font-semibold text-accent-text transition-colors duration-150 hover:bg-accent-hover active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-45'}
         type="submit"
         disabled={!isValidTodoTitle(workingTodoTitle)}
       >

@@ -105,10 +105,20 @@ export default function TodoListItem({
   if (todo.trash) {
     return (
       <li className={'relative overflow-hidden rounded-card'}>
-        <div className={'flex items-center gap-4 rounded-card bg-surface/55 py-5 pr-3 pl-5'}>
-          <span className={'flex-1 text-item font-medium text-text-muted line-through'}>
+        <div className={'flex items-center gap-3 rounded-card bg-surface/55 py-5 pr-3 pl-5'}>
+          <span className={'min-w-0 flex-1 text-item font-medium text-text-muted line-through'}>
             {todo.title}
           </span>
+          {folderName &&
+            <span
+              className={'inline-flex max-w-[7rem] shrink-0 items-center gap-1.5 truncate rounded-full bg-bg px-3 py-1 text-meta font-semibold text-text-muted sm:max-w-[10rem]'}>
+              <svg className={'h-3 w-3 shrink-0'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 20h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7.5l-2-2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2Z"/>
+              </svg>
+              {folderName}
+            </span>
+          }
           <button
             className={'flex min-h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-border bg-transparent px-4 text-sm font-semibold text-text-primary transition-colors duration-150 hover:bg-black/5 dark:hover:bg-white/10'}
             type={'button'}
@@ -229,38 +239,43 @@ export default function TodoListItem({
           ) : (
             <>
               <button
-                className={`${todo.isCompleted ? 'text-text-muted line-through' : 'text-text-primary'} ml-2 flex-1 cursor-pointer border-none bg-transparent text-left text-item font-medium`}
+                className={`${todo.isCompleted ? 'text-text-muted line-through' : 'text-text-primary'} ml-2 min-w-0 flex-1 cursor-pointer border-none bg-transparent text-left text-item font-medium`}
                 onClick={startEditing}
                 aria-label={`Edit: ${todo.title}`}
               >
                 {todo.title}
               </button>
-              {/* folder tag, only when the task is in a folder */}
-              {folderName &&
-                <span
-                  className={'hidden shrink-0 items-center gap-1.5 rounded-full bg-bg px-3 py-1 text-meta font-semibold text-text-muted sm:inline-flex'}>
-                  <svg className={'h-3 w-3'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                       strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M4 20h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7.5l-2-2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2Z"/>
-                  </svg>
-                  {folderName}
-                </span>
-              }
-              {/* date tags are hidden on the small screens so long titles keep their room */}
-              {createdLabel &&
-                <span className={`hidden shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-meta font-semibold sm:inline-flex ${todo.isCompleted ? 'bg-accent-2-soft text-accent-2' : 'bg-bg text-text-muted'}`}>
-                  {todo.isCompleted &&
-                    <svg className={'h-3 w-3'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-                         aria-hidden="true">
-                      <path d="M20 6 9 17l-5-5"/>
-                    </svg>
+
+              {/* tags sit at the right end of the row, stacked on a phone so a long
+                  folder name does not eat the title's width */}
+              {(folderName || createdLabel) &&
+                <div className={'flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2'}>
+                  {folderName &&
+                    <span
+                      className={'inline-flex max-w-[7rem] items-center gap-1.5 truncate rounded-full bg-bg px-3 py-1 text-meta font-semibold text-text-muted sm:max-w-[10rem]'}>
+                      <svg className={'h-3 w-3 shrink-0'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                           strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M4 20h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7.5l-2-2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2Z"/>
+                      </svg>
+                      {folderName}
+                    </span>
                   }
-                  {todo.isCompleted ? 'Done' : createdLabel}
-                </span>
+                  {createdLabel &&
+                    <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-meta font-semibold ${todo.isCompleted ? 'bg-accent-2-soft text-accent-2' : 'bg-bg text-text-muted'}`}>
+                      {todo.isCompleted &&
+                        <svg className={'h-3 w-3'} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                             aria-hidden="true">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                      }
+                      {todo.isCompleted ? 'Done' : createdLabel}
+                    </span>
+                  }
+                </div>
               }
               <button
-                className={'hidden h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-text-muted transition-colors duration-150 hover:bg-accent-soft hover:text-accent sm:flex'}
+                className={'hidden h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-text-muted transition-colors duration-150 hover:bg-accent-soft hover:text-accent sm:flex'}
                 type={'button'}
                 onClick={() => onDeleteTodo(todo.id)}
                 aria-label={`Delete: ${todo.title}`}

@@ -672,15 +672,15 @@ function TodosPageContent() {
           onFilterChange={handleFilterChange}
         />
 
-        {/* toolbar row 3: folder on the left, sort on the right */}
-        <div className={'flex items-center gap-4'}>
+        {/* toolbar row 3: on a phone the folder select stretches to fill the row */}
+        <div className={'flex items-center gap-2 sm:gap-4'}>
           {!inTrash &&
             <FolderFilter
               onManageFolders={() => setIsManagingFolders(true)}
             />
           }
 
-          <div className={'ml-auto shrink-0'}>
+          <div className={'shrink-0 sm:ml-auto'}>
             <SortBy
               sortBy={sortBy}
               sortDirection={sortDirection}

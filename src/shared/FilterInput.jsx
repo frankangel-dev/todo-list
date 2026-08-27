@@ -8,7 +8,7 @@ export default function FilterInput({filterTerm, onFilterChange}) {
       </svg>
       <label htmlFor={'filterInput'} className={'sr-only'}>Search todos:</label>
       <input
-        className={'min-h-11 w-full rounded-full border border-border bg-surface pl-11 pr-4 text-body-sm text-text-primary outline-none placeholder:text-text-muted'}
+        className={'min-h-13 w-full rounded-full border border-border bg-surface pl-11 pr-4 text-body-sm text-text-primary outline-none placeholder:text-text-muted'}
         id={'filterInput'}
         type={'text'}
         value={filterTerm}

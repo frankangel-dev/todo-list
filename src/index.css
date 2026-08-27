@@ -81,13 +81,16 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
   min-height: 100dvh;
-  font-family: var(--font-body);
+  font-family: var(--font-body), serif;
   height: 100%;
   overflow-y: auto;
+  /* stops the whole page sliding sideways on a phone */
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 h1, h2, h3 {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), serif;
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.08;

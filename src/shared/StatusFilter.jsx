@@ -21,7 +21,7 @@ export default function StatusFilter({counts = {}}) {
   };
 
   return (
-    <div className={'flex min-h-11 flex-1 overflow-hidden rounded-full border border-border sm:flex-none'}
+    <div className={'flex min-h-13 flex-1 overflow-hidden rounded-full border border-border sm:flex-none'}
          role={'group'} aria-label={'Filter todos by status'}>
       {options.map((option, index) => (
         <button

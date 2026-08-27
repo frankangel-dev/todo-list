@@ -9,10 +9,9 @@ export default function SortBy({sortBy, sortDirection, onSortByChange, onSortDir
   };
 
   return (
-    // on mobile the select is stretched invisibly over the circular icon button;
-    // sm and up returns to a normal text dropdown
+    // on mobile the select is stretched invisibly over the circular icon button
     <div
-      className={'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent sm:h-auto sm:min-h-11 sm:w-auto sm:focus-within:outline-none'}>
+      className={'relative flex h-13 w-13 shrink-0 items-center justify-center rounded-full border border-border bg-surface focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent sm:h-auto sm:min-h-13 sm:w-auto sm:focus-within:outline-none'}>
       <svg className={'pointer-events-none h-4 w-4 text-text-primary sm:hidden'} viewBox="0 0 24 24" fill="none"
            stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M4 6h13M4 12h9M4 18h5"/>
@@ -20,7 +19,7 @@ export default function SortBy({sortBy, sortDirection, onSortByChange, onSortDir
       </svg>
       <label htmlFor={'sortSelect'} className={'sr-only'}>Sort todos</label>
       <select
-        className={'absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-full bg-transparent opacity-0 outline-none sm:static sm:h-auto sm:min-h-11 sm:w-auto sm:appearance-auto sm:bg-surface sm:pr-8 sm:pl-4 sm:text-sm sm:text-text-primary sm:opacity-100'}
+        className={'absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-full bg-transparent opacity-0 outline-none sm:static sm:h-auto sm:min-h-13 sm:w-auto sm:bg-surface sm:py-3 sm:pr-8 sm:pl-4 sm:text-sm sm:text-text-primary sm:opacity-100'}
         id={'sortSelect'}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
