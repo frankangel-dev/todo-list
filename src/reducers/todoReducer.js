@@ -63,6 +63,7 @@ export function todoReducer(state, action) {
     case TODO_ACTIONS.FETCH_ERROR:
       return {
         ...state,
+        todoList: [],
         isTodoListLoading: false,
         isRefetching: false,
         isInitialLoad: false,

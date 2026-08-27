@@ -87,6 +87,14 @@ function TodosPageContent() {
           credentials: 'include'
         });
 
+        if (response.status === 404) {
+          dispatch({
+            type: TODO_ACTIONS.FETCH_SUCCESS,
+            payload: {todos: []}
+          });
+          return;
+        }
+
         if (!response.ok) {
           const error = new Error(response.status === 401 ? 'Unauthorized' : 'Failed to fetch tasks');
           error.status = response.status;
