@@ -12,7 +12,8 @@ export default function TodoList({
                                    inTrash = false,
                                    selectedIds = [],
                                    onToggleSelect,
-                                   onSelectAll
+                                   onSelectAll,
+                                   isSelecting = false
                                  }) {
   const {folders} = useFolders();
   // the API sends everything, All/Active/Done gets filtered here
@@ -81,8 +82,8 @@ export default function TodoList({
       </div>
     ) : (
       <div className={'flex flex-col gap-3'}>
-        {/* only selects what is on screen */}
-        {!inTrash && onSelectAll &&
+        {/* only selects what is on screen, and only while selection mode is on */}
+        {!inTrash && isSelecting && onSelectAll &&
           <button
             className={'flex cursor-pointer items-center gap-2.5 self-start border-none bg-transparent pl-5 text-sm font-semibold text-text-muted'}
             type={'button'}
@@ -111,7 +112,7 @@ export default function TodoList({
               onDeleteTodo={onDeleteTodo}
               onRestoreTodo={onRestoreTodo}
               isSelected={selectedIds.includes(todo.id)}
-              onToggleSelect={inTrash ? undefined : onToggleSelect}
+              onToggleSelect={inTrash || !isSelecting ? undefined : onToggleSelect}
               folderName={folderNames.get(todo.folderId)}
             />
           ))}

@@ -14,6 +14,7 @@ import BulkActionBar from "../features/Todos/BulkActionBar.jsx";
 import {FolderProvider} from "../contexts/FolderContext.jsx";
 import FolderManager from "../features/Folders/FolderManager.jsx";
 import FolderFilter from "../shared/FolderFilter.jsx";
+import SelectModeToggle from "../shared/SelectModeToggle.jsx";
 
 export default function TodosPage() {
   return (
@@ -34,6 +35,8 @@ function TodosPageContent() {
     selectedIds,
   } = state;
   const [isManagingFolders, setIsManagingFolders] = useState(false)
+  // checkboxes stay hidden until you turn selection mode on
+  const [isSelecting, setIsSelecting] = useState(false)
   const [refreshCount, setRefreshCount] = useState(0)
   // this makes the fetch below run again
   const refetchTodos = () => setRefreshCount(current => current + 1);
@@ -127,6 +130,14 @@ function TodosPageContent() {
     fetchTodos();
 
   }, [token, sortBy, sortDirection, debouncedFilterTerm, trash, folder, refreshCount]);
+
+  // if you switch to trash view while selecting there would be no way to turn it back off
+  useEffect(() => {
+    if (inTrash && isSelecting) {
+      setIsSelecting(false);
+      dispatch({type: TODO_ACTIONS.CLEAR_SELECTION});
+    }
+  }, [inTrash, isSelecting]);
 
   async function addTodo(todoTitle, folderId) {
     const newTodo = {
@@ -543,6 +554,14 @@ function TodosPageContent() {
     });
   }
 
+  // turning selection mode off drops whatever was ticked
+  function toggleSelectMode() {
+    setIsSelecting(current => {
+      if (current) clearSelection();
+      return !current;
+    });
+  }
+
   // writes a search param, or drops it entirely when it's back to the default
   const setParam = (key, value, defaultValue) => {
     const next = new URLSearchParams(searchParams);
@@ -701,6 +720,13 @@ function TodosPageContent() {
         {inTrash && visibleTodos.length > 0 &&
           <EmptyTrashButton onEmptyTrash={emptyTrash}/>
         }
+
+        {!inTrash && visibleTodos.length > 0 &&
+          <SelectModeToggle
+            isSelecting={isSelecting}
+            onToggle={toggleSelectMode}
+          />
+        }
       </div>
 
       {!inTrash &&
@@ -736,6 +762,7 @@ function TodosPageContent() {
           selectedIds={selectedIds}
           onToggleSelect={toggleSelect}
           onSelectAll={selectAll}
+          isSelecting={isSelecting}
         />
       </div>
     </div>
